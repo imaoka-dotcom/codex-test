@@ -1,300 +1,376 @@
-<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>在庫メモアプリ</title>
-    <style>
-      :root {
-        --bg: #fff7fb;
-        --card: #ffffff;
-        --mint: #d8f7ef;
-        --lavender: #ece5ff;
-        --pink: #ffdff0;
-        --text: #5b4b6d;
-        --muted: #8a7f9f;
-        --danger: #ff7da4;
-        --shadow: 0 10px 24px rgba(173, 148, 201, 0.2);
-      }
+diff --git a/index.html b/index.html
+index 70531065f2f0583c82829e9342c38f39bae5975b..7dabc2ec9fc7b381fbf0f6323475aad230e0fea0 100644
+--- a/index.html
++++ b/index.html
+@@ -1,11 +1,368 @@
+ <!doctype html>
+ <html lang="ja">
+   <head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-    <title>Hello Carinopan!</title>
++    <title>在庫検索デモ</title>
++    <style>
++      :root {
++        --bg: #f5f5f7;
++        --card: #ffffff;
++        --text: #1d1d1f;
++        --muted: #6e6e73;
++        --line: #e7e7ea;
++        --blue: #0071e3;
++        --blue-soft: #e8f2ff;
++        --danger: #d93025;
++        --danger-soft: #ffeceb;
++        --shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
++      }
++
++      * {
++        box-sizing: border-box;
++      }
++
++      body {
++        margin: 0;
++        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Yu Gothic UI",
++          sans-serif;
++        background: var(--bg);
++        color: var(--text);
++        line-height: 1.5;
++      }
++
++      .container {
++        width: min(900px, 92vw);
++        margin: 28px auto 48px;
++      }
++
++      .hero,
++      .search-card,
++      .results-card {
++        background: var(--card);
++        border: 1px solid var(--line);
++        border-radius: 24px;
++        box-shadow: var(--shadow);
++      }
++
++      .hero {
++        padding: 28px 22px;
++        margin-bottom: 14px;
++      }
++
++      .hero h1 {
++        font-size: clamp(1.6rem, 4vw, 2.1rem);
++        margin: 0;
++        font-weight: 700;
++        letter-spacing: -0.02em;
++      }
++
++      .hero p {
++        margin: 8px 0 0;
++        color: var(--muted);
++      }
++
++      .search-card {
++        padding: 16px;
++        margin-bottom: 14px;
++      }
++
++      .search-row {
++        display: flex;
++        flex-direction: column;
++        gap: 10px;
++      }
++
++      label {
++        font-size: 0.9rem;
++        font-weight: 600;
++        color: var(--muted);
++      }
++
++      .input-row {
++        display: grid;
++        grid-template-columns: 1fr auto;
++        gap: 8px;
++      }
++
++      input {
++        width: 100%;
++        border: 1.5px solid #d7d7dc;
++        background: #fff;
++        border-radius: 14px;
++        padding: 12px 14px;
++        font-size: 1rem;
++        letter-spacing: 0.02em;
++      }
++
++      input:focus {
++        outline: none;
++        border-color: #95c2f4;
++        box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.12);
++      }
++
++      button {
++        border: none;
++        border-radius: 999px;
++        padding: 0 16px;
++        font-size: 0.92rem;
++        font-weight: 600;
++        min-height: 46px;
++        cursor: pointer;
++      }
++
++      .reset-btn {
++        background: var(--blue-soft);
++        color: var(--blue);
++      }
++
++      .results-card {
++        padding: 16px;
++      }
++
++      .status {
++        font-size: 0.94rem;
++        color: var(--muted);
++        margin: 0 0 14px;
++      }
++
++      .list {
++        list-style: none;
++        margin: 0;
++        padding: 0;
++        display: grid;
++        gap: 10px;
++      }
++
++      .item {
++        border: 1px solid var(--line);
++        border-radius: 18px;
++        padding: 14px;
++        background: #fff;
++      }
++
++      .item-head {
++        display: flex;
++        justify-content: space-between;
++        align-items: flex-start;
++        gap: 10px;
++      }
++
++      .name {
++        margin: 0;
++        font-size: 1.06rem;
++      }
++
++      .jan {
++        margin: 2px 0 0;
++        color: var(--muted);
++        font-size: 0.9rem;
++      }
++
++      .meta {
++        display: flex;
++        gap: 8px;
++        flex-wrap: wrap;
++        margin-top: 10px;
++      }
++
++      .badge {
++        display: inline-flex;
++        align-items: center;
++        gap: 5px;
++        border-radius: 999px;
++        padding: 5px 10px;
++        font-size: 0.82rem;
++        font-weight: 600;
++        background: #f0f0f4;
++        color: #3a3a3c;
++      }
++
++      .stock-zero {
++        color: var(--danger);
++        background: var(--danger-soft);
++      }
++
++      .single-wrap {
++        display: grid;
++        gap: 10px;
++      }
++
++      .single-wrap .item {
++        border-width: 1.5px;
++      }
++
++      @media (min-width: 760px) {
++        .search-card,
++        .results-card {
++          padding: 20px;
++        }
++
++        .input-row {
++          grid-template-columns: 1fr auto;
++        }
++      }
++    </style>
+   </head>
+   <body>
+-    <h1>Hello Carinopan!</h1>
++    <main class="container">
++      <section class="hero">
++        <h1>在庫確認デモ</h1>
++        <p>仮データ100件から、JANコードで在庫と価格を検索できます（自分用ローカル確認向け）。</p>
++      </section>
++
++      <section class="search-card">
++        <div class="search-row">
++          <label for="jan-input">JANコード検索（数字のみ / 13桁）</label>
++          <div class="input-row">
++            <input id="jan-input" inputmode="numeric" autocomplete="off" placeholder="例: 4900000000012" />
++            <button id="reset-btn" class="reset-btn" type="button">リセット</button>
++          </div>
++        </div>
++      </section>
++
++      <section class="results-card">
++        <p id="status" class="status"></p>
++        <div id="results"></div>
++      </section>
++    </main>
++
++    <script>
++      const TOTAL_ITEMS = 100;
++      const JAN_BASE = 4900000000000;
++      const today = new Date().toISOString().slice(0, 10);
++      const janInput = document.getElementById("jan-input");
++      const resetBtn = document.getElementById("reset-btn");
++      const statusEl = document.getElementById("status");
++      const resultsEl = document.getElementById("results");
++
++      const breads = [
++        "いちごクリームパン",
++        "くま食パン",
++        "メロンパン",
++        "チョココロネ",
++        "塩バターロール",
++        "カレーパン",
++        "あんぱん",
++        "クロワッサン",
++        "ミルクフランス",
++        "シナモンロール",
++        "レーズンブレッド",
++        "ベーグル",
++      ];
++
++      const randomInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
++
++      const generateDummyItems = () =>
++        Array.from({ length: TOTAL_ITEMS }, (_, index) => {
++          const jan = String(JAN_BASE + index + 1);
++          const baseName = breads[index % breads.length];
++          return {
++            jan,
++            name: `${baseName} ${String(index + 1).padStart(3, "0")}`,
++            stock: randomInRange(0, 50),
++            price: randomInRange(200, 980),
++            updated_at: today,
++          };
++        });
++
++      const items = generateDummyItems();
++
++      const createBadges = (item) => {
++        const stockClass = item.stock === 0 ? "badge stock-zero" : "badge";
++        const stockText = item.stock === 0 ? "在庫 0（欠品）" : `在庫 ${item.stock}`;
++        return `
++          <div class="meta">
++            <span class="${stockClass}">${stockText}</span>
++            <span class="badge">価格 ¥${item.price.toLocaleString("ja-JP")}</span>
++            <span class="badge">最終更新日 ${item.updated_at}</span>
++          </div>
++        `;
++      };
++
++      const renderList = (results) => {
++        const html = results
++          .map(
++            (item) => `
++              <li class="item">
++                <div class="item-head">
++                  <div>
++                    <h3 class="name">${item.name}</h3>
++                    <p class="jan">JAN: ${item.jan}</p>
++                  </div>
++                </div>
++                ${createBadges(item)}
++              </li>
++            `,
++          )
++          .join("");
++
++        resultsEl.innerHTML = `<ul class="list">${html}</ul>`;
++      };
++
++      const renderSingle = (item) => {
++        resultsEl.innerHTML = `
++          <div class="single-wrap">
++            <article class="item">
++              <div class="item-head">
++                <div>
++                  <h3 class="name">${item.name}</h3>
++                  <p class="jan">JAN: ${item.jan}</p>
++                </div>
++              </div>
++              ${createBadges(item)}
++            </article>
++          </div>
++        `;
++      };
++
++      const sanitizeJanInput = (value) => value.replace(/\D/g, "").slice(0, 13);
++
++      const searchItems = (query) => {
++        if (!query) {
++          return items;
++        }
++        return items.filter((item) => item.jan.includes(query));
++      };
++
++      const render = () => {
++        const query = sanitizeJanInput(janInput.value);
++        if (query !== janInput.value) {
++          janInput.value = query;
++        }
++
++        const matched = searchItems(query);
++
++        if (!query) {
++          statusEl.textContent = `全 ${items.length} 件を表示中（JANを入力すると絞り込み）`;
++          renderList(matched);
++          return;
++        }
++
++        if (matched.length === 0) {
++          statusEl.textContent = `「${query}」に一致する商品はありません`;
++          resultsEl.innerHTML = "";
++          return;
++        }
++
++        if (matched.length === 1 && matched[0].jan === query) {
++          statusEl.textContent = `1件ヒット（完全一致）`;
++          renderSingle(matched[0]);
++          return;
++        }
++
++        statusEl.textContent = `${matched.length}件ヒット（部分一致）`;
++        renderList(matched);
++      };
++
++      janInput.addEventListener("input", render);
++      resetBtn.addEventListener("click", () => {
++        janInput.value = "";
++        render();
++        janInput.focus();
++      });
++
++      render();
++    </script>
+   </body>
+ </html>
 
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
-        color: var(--text);
-        background: radial-gradient(circle at top left, var(--lavender), transparent 45%),
-          radial-gradient(circle at top right, var(--mint), transparent 40%), var(--bg);
-      }
-
-      .container {
-        width: min(920px, 92vw);
-        margin: 2rem auto 3rem;
-      }
-
-      .title-card,
-      .form-card,
-      .list-card {
-        background: var(--card);
-        border-radius: 20px;
-        box-shadow: var(--shadow);
-        padding: 1.25rem;
-      }
-
-      .title-card {
-        background: linear-gradient(135deg, #ffe9f5, #e9f2ff);
-        text-align: center;
-        margin-bottom: 1rem;
-      }
-
-      h1 {
-        margin: 0;
-        font-size: 1.8rem;
-      }
-
-      p {
-        margin: 0.5rem 0 0;
-        color: var(--muted);
-      }
-
-      .form-card {
-        margin-bottom: 1rem;
-      }
-
-      .input-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 0.8rem;
-      }
-
-      label {
-        display: block;
-        font-size: 0.9rem;
-        margin-bottom: 0.3rem;
-      }
-
-      input {
-        width: 100%;
-        border: 2px solid #efe8ff;
-        border-radius: 14px;
-        padding: 0.65rem 0.8rem;
-        font-size: 1rem;
-        color: var(--text);
-        background: #fff;
-      }
-
-      input:focus {
-        outline: none;
-        border-color: #cdbdff;
-        box-shadow: 0 0 0 3px rgba(205, 189, 255, 0.3);
-      }
-
-      .actions {
-        margin-top: 1rem;
-        display: flex;
-        justify-content: flex-end;
-      }
-
-      button {
-        border: none;
-        border-radius: 999px;
-        padding: 0.65rem 1.1rem;
-        font-size: 0.95rem;
-        font-weight: 700;
-        cursor: pointer;
-      }
-
-      .add-btn {
-        background: linear-gradient(135deg, #b6f5de, #c6ddff);
-        color: #433656;
-      }
-
-      .list-card h2 {
-        margin: 0 0 0.8rem;
-        font-size: 1.2rem;
-      }
-
-      .empty {
-        text-align: center;
-        color: var(--muted);
-        margin: 0.4rem 0 0;
-      }
-
-      ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 0.75rem;
-      }
-
-      .item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #fff9fe;
-        border: 1px solid #f2eaff;
-        border-radius: 16px;
-        padding: 0.75rem 0.9rem;
-      }
-
-      .item strong {
-        display: block;
-      }
-
-      .meta {
-        margin-top: 0.25rem;
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
-
-      .delete-btn {
-        background: var(--pink);
-        color: #7a3350;
-      }
-
-      @media (max-width: 720px) {
-        .input-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .item {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0.75rem;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="container">
-      <section class="title-card">
-        <h1>🧁 在庫メモアプリ</h1>
-        <p>商品名・在庫数・価格をサクッとメモして管理できます。</p>
-      </section>
-
-      <section class="form-card">
-        <form id="item-form">
-          <div class="input-grid">
-            <div>
-              <label for="name">商品名</label>
-              <input id="name" name="name" type="text" required placeholder="例: いちごジャム" />
-            </div>
-            <div>
-              <label for="stock">在庫数</label>
-              <input id="stock" name="stock" type="number" min="0" required placeholder="例: 12" />
-            </div>
-            <div>
-              <label for="price">価格 (円)</label>
-              <input id="price" name="price" type="number" min="0" required placeholder="例: 580" />
-            </div>
-          </div>
-          <div class="actions">
-            <button class="add-btn" type="submit">追加する</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="list-card">
-        <h2>在庫一覧</h2>
-        <p id="empty" class="empty">まだ商品がありません。上のフォームから追加しましょう。</p>
-        <ul id="item-list"></ul>
-      </section>
-    </main>
-
-    <script>
-      const STORAGE_KEY = "stockMemoItems";
-      const form = document.getElementById("item-form");
-      const itemList = document.getElementById("item-list");
-      const emptyMessage = document.getElementById("empty");
-
-      const loadItems = () => {
-        try {
-          const saved = localStorage.getItem(STORAGE_KEY);
-          return saved ? JSON.parse(saved) : [];
-        } catch {
-          return [];
-        }
-      };
-
-      let items = loadItems();
-
-      const saveItems = () => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-      };
-
-      const formatPrice = (price) => `${Number(price).toLocaleString("ja-JP")} 円`;
-
-      const render = () => {
-        itemList.innerHTML = "";
-
-        if (items.length === 0) {
-          emptyMessage.style.display = "block";
-          return;
-        }
-
-        emptyMessage.style.display = "none";
-
-        items.forEach((item) => {
-          const li = document.createElement("li");
-          li.className = "item";
-
-          li.innerHTML = `
-            <div>
-              <strong>${item.name}</strong>
-              <div class="meta">在庫: ${item.stock} / 価格: ${formatPrice(item.price)}</div>
-            </div>
-            <button class="delete-btn" type="button" data-id="${item.id}">削除</button>
-          `;
-
-          itemList.appendChild(li);
-        });
-      };
-
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
-
-        const name = form.name.value.trim();
-        const stock = form.stock.value;
-        const price = form.price.value;
-
-        if (!name || stock === "" || price === "") {
-          return;
-        }
-
-        items.push({
-          id: Date.now().toString(36),
-          name,
-          stock: Number(stock),
-          price: Number(price),
-        });
-
-        saveItems();
-        render();
-        form.reset();
-        form.name.focus();
-      });
-
-      itemList.addEventListener("click", (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLButtonElement)) {
-          return;
-        }
-
-        const { id } = target.dataset;
-        if (!id) {
-          return;
-        }
-
-        items = items.filter((item) => item.id !== id);
-        saveItems();
-        render();
-      });
-
-      render();
-    </script>
-  </body>
-</html>
